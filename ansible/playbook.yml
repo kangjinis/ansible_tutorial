@@ -1,6 +1,4 @@
 ---
-- hosts:
-    - web1.vagrant.test
-    - web2.vagrant.test
+- hosts: all
   roles:
     - init
