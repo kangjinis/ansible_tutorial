@@ -7,21 +7,26 @@
   become: true
   file: src=/vagrant dest=/var/www/vhosts state=link
 
-- name: Update and upgrade apt packages
-  become: true
-  apt:
-    upgrade: yes
-    update_cache: yes
-    cache_valid_time: 86400
-
-- name: Install basic packages
-  become: true
-  apt:
-    pkg:
-      - git
-      - unzip
-      - python-pip
-      - python3-pip
-      - fabric
+- name: Set authorized key taken from file
+  authorized_key:
+    user: vagrant
     state: present
-    update_cache: yes
+    key: "{{ lookup('file', '/Users/junkang/.ssh/id_rsa.pub') }}"
+
+# - name: Update and upgrade apt packages
+#   become: true
+#   apt:
+#     upgrade: 'yes'
+#     update_cache: yes
+#     cache_valid_time: 86400
+
+# - name: Install basic packages
+#   become: true
+#   apt:
+#     pkg:
+#       - git
+#       - unzip
+#       - python-pip
+#       - python3-pip
+#     state: present
+#     update_cache: yes

@@ -1,4 +1,5 @@
 ---
-- hosts: default
+- hosts:
+    - web0.vagrant.test
   roles:
     - init
