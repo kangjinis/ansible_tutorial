@@ -13,20 +13,12 @@
     state: present
     key: "{{ lookup('file', '/Users/junkang/.ssh/id_rsa.pub') }}"
 
-# - name: Update and upgrade apt packages
-#   become: true
-#   apt:
-#     upgrade: 'yes'
-#     update_cache: yes
-#     cache_valid_time: 86400
-
-# - name: Install basic packages
-#   become: true
-#   apt:
-#     pkg:
-#       - git
-#       - unzip
-#       - python-pip
-#       - python3-pip
-#     state: present
-#     update_cache: yes
+- name: Install basic packages
+  become: true
+  yum:
+    pkg:
+      - git
+      - unzip
+      - java-1.8.0-openjdk-1.8.0.222.b10
+    state: present
+    update_cache: yes

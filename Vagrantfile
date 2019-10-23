@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "web#{i}.vagrant.test" do |web|
       web.landrush.enabled = true
       web.vm.hostname = "web#{i}.vagrant.test"
-      web.vm.box = "ubuntu/trusty64"
+      web.vm.box = "centos/7"
     end
   end
   config.vm.provision "ansible" do |ansible|
