@@ -62,6 +62,3 @@
   service:
     name: test-rest
     state: started
-
-- debug:
-    msg: "goto http://localhost:10081/greeting"
