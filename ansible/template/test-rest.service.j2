@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+[Unit]
+Description=test-rest
+After=syslog.target remote-fs.target network-online.target nss-lookup.target
+Wants=network-online.target
+Conflicts=shutdown.target
+Before=shutdown.target
+
+[Service]
+User=test-rest
+# The configuration file application.properties should be here:
+WorkingDirectory=/var/www/test-rest-java
+ExecStart=/usr/bin/java -Dserver.port=8080 -jar /var/www/test-rest-java/target/gs-rest-service-0.1.0.jar
+SuccessExitStatus=143
+TimeoutStopSec=600
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

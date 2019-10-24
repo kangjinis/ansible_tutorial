@@ -1,0 +1,67 @@
+---
+- name: Add the user 
+  become: true
+  user:
+    name: test-rest
+    comment: test-rest
+    uid: '1040'
+
+- name: '8080 open'
+  become: true
+  firewalld:
+    port: 8080/tcp
+    state: enabled
+    permanent: yes
+
+- name: Make app directory
+  become: true
+  file: path=/var/www state=directory mode=0755
+
+- name: Symbolic link
+  become: true
+  file: src=/vagrant dest=/var/www/vhosts state=link
+
+- name: Set authorized key taken from file
+  authorized_key:
+    user: vagrant
+    state: present
+    key: "{{ lookup('file', '/Users/junkang/.ssh/id_rsa.pub') }}"
+
+- name: Install basic packages
+  become: true
+  yum:
+    pkg:
+      - git
+      - unzip
+      - java-1.8.0-openjdk-1.8.0.222.b10
+    state: present
+    update_cache: yes
+
+- name: Git clone
+  become: true
+  git:
+    repo: 'https://github.com/kangjinis/test-rest-java'
+    dest: /var/www/test-rest-java
+    clone: yes
+
+- name: "Create systemd daemon file for test-rest"
+  become: true
+  template:
+    src: "template/test-rest.service.j2"
+    dest: "/etc/systemd/system/test-rest.service"
+    owner: "test-rest"
+    group: "test-rest"
+
+- name: reload systemd
+  become: true
+  systemd:
+    daemon_reload: true
+
+- name: Start service
+  become: true
+  service:
+    name: test-rest
+    state: started
+
+- debug:
+    msg: "goto http://localhost:10081/greeting"
