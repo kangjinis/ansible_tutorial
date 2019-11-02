@@ -6,10 +6,10 @@
     comment: test-rest
     uid: '1040'
 
-- name: '8080 open'
+- name: '80 open'
   become: true
   firewalld:
-    port: 8080/tcp
+    port: 80/tcp
     state: enabled
     permanent: yes
 
