@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
       web.landrush.enabled = true
       web.vm.hostname = "web#{i}.vagrant.test"
       web.vm.box = "centos/7"
-      web.vm.network "forwarded_port", guest: 8080, host: "1008#{i}"
+      # web.vm.network "forwarded_port", guest: 8080, host: "1008#{i}"
     end
   end
 
