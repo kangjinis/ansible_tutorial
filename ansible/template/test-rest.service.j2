@@ -10,7 +10,7 @@ Before=shutdown.target
 User=test-rest
 # The configuration file application.properties should be here:
 WorkingDirectory=/var/www/test-rest-java
-ExecStart=/usr/bin/java -Dserver.port=8080 -jar /var/www/test-rest-java/target/gs-rest-service-0.1.0.jar
+ExecStart=/usr/bin/java -Dserver.port=80 -jar /var/www/test-rest-java/target/gs-rest-service-0.1.0.jar
 SuccessExitStatus=143
 TimeoutStopSec=600
 Restart=on-failure
