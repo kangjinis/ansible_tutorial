@@ -6,13 +6,6 @@
     comment: test-rest
     uid: '1040'
 
-- name: '80 open'
-  become: true
-  firewalld:
-    port: 80/tcp
-    state: enabled
-    permanent: yes
-
 - name: Make app directory
   become: true
   file: path=/var/www state=directory mode=0755
@@ -21,21 +14,42 @@
   become: true
   file: src=/vagrant dest=/var/www/vhosts state=link
 
-- name: Set authorized key taken from file
-  authorized_key:
-    user: vagrant
-    state: present
-    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-
 - name: Install basic packages
   become: true
   yum:
     pkg:
       - git
       - unzip
-      - java-1.8.0-openjdk-1.8.0.222.b10
+      - libselinux-python
     state: present
     update_cache: yes
+  
+- name: Set authorized key taken from file
+  authorized_key:
+    user: vagrant
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+- name: Download java 11
+  get_url:
+    url: https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
+    dest: /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz
+
+- name: Make java directory
+  become: true
+  file: path=/usr/lib/jvm state=directory mode=0755
+
+- name: Unarchive a file that is already on the remote machine
+  become: true
+  shell: 'tar -xvf /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz; mv jdk-11.0.2 /usr/lib/jvm/'
+
+- name: Set JAVA_HOME
+  become: true
+  lineinfile:
+    dest: /etc/environment
+    state: present
+    regexp: '^JAVA_HOME'
+    line: 'JAVA_HOME=/usr/lib/jvm/jdk-11.0.2'
 
 - name: Git clone
   become: true
@@ -44,21 +58,8 @@
     dest: /var/www/test-rest-java
     clone: yes
 
-- name: "Create systemd daemon file for test-rest"
+- name: Run the application
   become: true
-  template:
-    src: "template/test-rest.service.j2"
-    dest: "/etc/systemd/system/test-rest.service"
-    owner: "test-rest"
-    group: "test-rest"
+  shell: '/usr/lib/jvm/jdk-11.0.2/bin/java -Dserver.port=8080 -jar /var/www/test-rest-java/target/gs-rest-service-0.1.0.jar &'
 
-- name: reload systemd
-  become: true
-  systemd:
-    daemon_reload: true
 
-- name: Start service
-  become: true
-  service:
-    name: test-rest
-    state: started
